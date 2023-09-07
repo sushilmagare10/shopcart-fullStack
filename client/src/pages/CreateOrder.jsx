@@ -1,17 +1,18 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../constants/Button";
 import styled from "styled-components";
 import StyledInput from "../constants/Input";
 import { md } from "../constants/Responsive";
-import { userRequest } from "../requestMethods";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
+import { MakeOrder } from "../redux/orderSlice";
 
 function CreateOrder() {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const amount = useSelector((state) => state.cart.cartTotalAmount);
   const userId = useSelector((state) => state.auth.currentUser.user._id);
-
+  const currentOrder = useSelector((state) => state.order.currentOrder);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [shippingInfo, setShippingInfo] = useState({
@@ -49,77 +50,80 @@ function CreateOrder() {
         payment_status: "pending",
         total: amount,
       };
-
-      await userRequest.post("/order/new", order);
-
-      navigate("/order-success");
+      dispatch(MakeOrder(order));
     } catch (error) {
-      console.log("Error placing order:", error);
+      console.log("Create Order Failed", error);
+    } finally {
+      navigate("/success", { replace: true });
     }
   };
 
   return (
-    <CheckoutContainer>
-      <h2>Checkout</h2>
-      <CheckoutForm>
-        <StyledInput
-          checkout
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={shippingInfo.name}
-          onChange={handleShippingChange}
-        />
+    <>
+      {!cartItems.length && <Navigate to="/" replace={true}></Navigate>}
 
-        <StyledInput
-          checkout
-          type="text"
-          name="address"
-          placeholder="Address"
-          value={shippingInfo.address}
-          onChange={handleShippingChange}
-        />
-        <StyledInput
-          checkout
-          type="text"
-          name="state"
-          placeholder="State"
-          value={shippingInfo.state}
-          onChange={handleShippingChange}
-        />
-        <StyledInput
-          checkout
-          type="text"
-          name="city"
-          placeholder="City"
-          value={shippingInfo.city}
-          onChange={handleShippingChange}
-        />
-        <Container>
+      <CheckoutContainer>
+        <h2>Checkout</h2>
+        <CheckoutForm>
           <StyledInput
             checkout
-            type="tel"
-            name="phone"
-            placeholder="Phone Number"
-            value={shippingInfo.phone}
+            type="text"
+            name="name"
+            placeholder="Name"
+            value={shippingInfo.name}
+            onChange={handleShippingChange}
+          />
+
+          <StyledInput
+            checkout
+            type="text"
+            name="address"
+            placeholder="Address"
+            value={shippingInfo.address}
             onChange={handleShippingChange}
           />
           <StyledInput
             checkout
             type="text"
-            name="postalCode"
-            placeholder="Postal Code"
-            value={shippingInfo.postalCode}
+            name="state"
+            placeholder="State"
+            value={shippingInfo.state}
             onChange={handleShippingChange}
           />
-        </Container>
-        {/* Display the list of cart items */}
+          <StyledInput
+            checkout
+            type="text"
+            name="city"
+            placeholder="City"
+            value={shippingInfo.city}
+            onChange={handleShippingChange}
+          />
+          <Container>
+            <StyledInput
+              checkout
+              type="tel"
+              name="phone"
+              placeholder="Phone Number"
+              value={shippingInfo.phone}
+              onChange={handleShippingChange}
+            />
+            <StyledInput
+              checkout
+              type="text"
+              name="postalCode"
+              placeholder="Postal Code"
+              value={shippingInfo.postalCode}
+              onChange={handleShippingChange}
+            />
+          </Container>
+          {/* Display the list of cart items */}
 
-        <Button continue outline onClick={handlePlaceOrder}>
-          Place Order
-        </Button>
-      </CheckoutForm>
-    </CheckoutContainer>
+          <Button continue outline onClick={handlePlaceOrder}>
+            Place Order
+          </Button>
+        </CheckoutForm>
+      </CheckoutContainer>
+    </>
   );
 }
 

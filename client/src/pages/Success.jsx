@@ -1,29 +1,34 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { clearCart } from "../redux/cartSlice";
 import styled from "styled-components";
+import { resetOrder } from "../redux/orderSlice";
 
 const Success = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    // reset cart
     dispatch(clearCart());
+    // reset currentOrder
+    dispatch(resetOrder());
   }, [dispatch]);
 
   return (
-    <SuccessContainer>
-      <SuccessMain>
-        <SuccessText>Order Successfully Placed</SuccessText>
-        <SuccessTitle>Order Number </SuccessTitle>
-        <SuccessDescription>
-          You can check your order in My Account > My Orders
-        </SuccessDescription>
-        <ButtonContainer>
-          <StyledLink to="/">Go back home</StyledLink>
-        </ButtonContainer>
-      </SuccessMain>
-    </SuccessContainer>
+    <>
+      <SuccessContainer>
+        <SuccessMain>
+          <SuccessText>Order Successfully Placed</SuccessText>
+          <SuccessDescription>
+            You can check your order in My Account > My Orders
+          </SuccessDescription>
+          <ButtonContainer>
+            <StyledLink to="/">Go back home</StyledLink>
+          </ButtonContainer>
+        </SuccessMain>
+      </SuccessContainer>
+    </>
   );
 };
 

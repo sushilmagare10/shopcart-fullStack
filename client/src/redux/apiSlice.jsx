@@ -6,6 +6,12 @@ import {
   resgisterUser,
   resgisterUserFailure,
 } from "./authSlice";
+import {
+  createOrder,
+  createOrderFail,
+  getAllOrders,
+  getAllOrdersFail,
+} from "./orderSlice";
 
 export const login = async (dispatch, auth) => {
   try {

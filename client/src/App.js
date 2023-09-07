@@ -81,7 +81,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/order-success",
+        path: "/success",
         element: (
           <Protected>
             <Success></Success>

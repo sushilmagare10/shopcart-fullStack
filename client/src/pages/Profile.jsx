@@ -1,48 +1,48 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userRequest } from "../requestMethods";
-
 import { md } from "../constants/Responsive";
-import { accent, primary, secondary, text } from "../constants/Colors";
+import { accent, primary, text } from "../constants/Colors";
 import styled from "styled-components";
 import order from "../images/noorder.png";
 import { Header } from "../constants/Header";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const ProfilePage = () => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [orders, setOrders] = useState([]);
-
+  const dispatch = useDispatch();
   const userId = useSelector((state) => state.auth.currentUser.user._id);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true); // Add a loading state
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        setLoading(true);
-        setError("");
-        const response = await userRequest.get(`/all-orders/${userId}`);
-        setOrders(response.data);
-
+        const res = await userRequest.get(`/all-orders/${userId}`);
+        setOrders(res.data);
         setLoading(false);
       } catch (error) {
-        setError("Error fetching orders.");
+        console.log("Failed to get orders", error);
         setLoading(false);
       }
     };
 
     fetchOrders();
-  }, [userId]);
+  }, [dispatch, userId]);
 
   return (
     <div>
       <h2>Profile Page</h2>
       <Header>My Orders</Header>
       <div>
-        {orders.length === 0 ? (
+        {loading ? (
+          <Skeleton count={7} height={150} /> // Display skeleton loader if loading
+        ) : orders === null ? (
           <NoOrdersContainer>
             <NoOrderImg src={order} alt="no order" />
           </NoOrdersContainer>
         ) : (
+          orders &&
           orders.map((order) => (
             <div key={order._id}>
               {order.products.map((product) => (

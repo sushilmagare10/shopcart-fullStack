@@ -9,6 +9,8 @@ import { accent, background, primary, text } from "../constants/Colors";
 import { md } from "../constants/Responsive";
 import { addToCart } from "../redux/cartSlice";
 import { MdCurrencyRupee } from "react-icons/md";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const SingleProduct = () => {
   const location = useLocation();
@@ -58,15 +60,15 @@ const SingleProduct = () => {
               <Image src={product.images[0]} />
             )
           ) : (
-            <p>No image available</p>
+            <Skeleton count={7} height={200} />
           )}
         </ImgContainer>
 
         <InfoContainer>
-          <Title>{product.name}</Title>
-          <Desc>{product.description}</Desc>
+          <Title>{product.name || <Skeleton />}</Title>
+          <Desc>{product.description || <Skeleton count={7} />}</Desc>
           <Price>
-            <MdCurrencyRupee size={30} /> {product?.price}
+            <MdCurrencyRupee size={30} /> {product?.price || <Skeleton />}
           </Price>
           <FilterContainer>
             <Filter>

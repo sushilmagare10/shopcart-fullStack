@@ -5,32 +5,49 @@ import { useEffect, useState } from "react"; // Import useState
 import { userRequest } from "../requestMethods";
 import styled from "styled-components";
 import { md } from "../constants/Responsive";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getNewProducts = async () => {
+      setIsLoading(true);
       try {
         const res = await userRequest.get("/products?new=true");
-
         setProducts(res.data.products);
       } catch (err) {
         console.error("Error fetching new products:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
     getNewProducts();
   }, []);
-  console.log(products);
+
+  if (isLoading) {
+    return (
+      <div>
+        <Skeleton height={100} count={8} />
+      </div>
+    );
+  }
+
   return (
     <>
-      <Banner />
-      <Header>New Products</Header>
-      <Wrapper>
-        {products.map((item) => (
-          <Product item={item} key={item.id} />
-        ))}
-      </Wrapper>
+      {!isLoading && (
+        <>
+          <Banner />
+          <Header>New Products</Header>
+          <Wrapper>
+            {products.map((item) => (
+              <Product item={item} key={item.id} />
+            ))}
+          </Wrapper>
+        </>
+      )}
     </>
   );
 };
@@ -49,4 +66,10 @@ const Wrapper = styled.div`
     gridColumnGap: "20px",
     gridRowGap: "20px",
   })}
+`;
+
+const SkeletonDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

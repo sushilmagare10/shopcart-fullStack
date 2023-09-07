@@ -1,14 +1,23 @@
 import styled from "styled-components";
 import Products from "../components/Products";
 import { useLocation } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { primary } from "../constants/Colors";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const ProductList = () => {
   const location = useLocation();
   const cat = location.pathname.split("/")[2];
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState("newest");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
 
   const handleFilters = (e) => {
     const value = e.target.value;
@@ -20,7 +29,7 @@ const ProductList = () => {
 
   return (
     <Container>
-      <Title>{cat}</Title>
+      <Title>{loading ? <Skeleton height={40} /> : cat}</Title>
       <FilterContainer>
         <Filter>
           <FilterText>Filter Products:</FilterText>
@@ -52,7 +61,13 @@ const ProductList = () => {
           </Select>
         </Filter>
       </FilterContainer>
-      <Products cat={cat} filters={filters} sort={sort} />
+      {loading ? (
+        <div>
+          <Skeleton count={7} height={120} />
+        </div>
+      ) : (
+        <Products cat={cat} filters={filters} sort={sort} />
+      )}
     </Container>
   );
 };
